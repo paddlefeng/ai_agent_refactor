@@ -1,1 +1,36 @@
+import re
 
+class AnalyzerAgent:
+
+    def analyze(self, file_path):
+        print("🔍 Analyzer: Scan...")
+
+        issues = []
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            code = f.read()
+        if re.search(r"print\(", code):
+            issues.append({
+                "type": "debug",
+                "message": "print text"
+            })
+        if re.search(r"temp\s*=", code):
+            issues.append({
+                "type": "unused_var",
+                "message": "temp"
+            })
+        functions = re.findall(r"def .*?:([\s\S]*?)(?=def|$)", code)
+        for func in functions:
+            if len(func.split("\n")) > 8:
+                issues.append({
+                    "type": "long_function",
+                    "message": "long"
+                })
+        loops = re.findall(r"for .*?:", code)
+        if len(loops) > 2:
+            issues.append({
+                "type": "duplicate_logic",
+                "message": "Repeat"
+            })
+
+        return issues
